@@ -83,10 +83,64 @@ ShaderStudy.curriculum = [
         readingTime: 20,
         quiz: [
           {
-            question: "Trong hệ tọa độ đồng nhất, giá trị W = 0 đại diện cho điều gì?",
-            options: ["Một điểm", "Một hướng", "Một ma trận", "Một màu sắc"],
+            question: "Mục đích chính của giai đoạn Rasterization (Quét lưới) là gì?",
+            options: ["Thiết lập bề mặt ánh sáng của đối tượng", "Tìm kiếm và đồng bộ hóa các pixels bị chiếm dụng bởi một đối tượng trên màn hình (2D coordinates)", "Tính toán màu sắc của điểm ảnh", "Biến đổi tọa độ từ 3D sang 2D"],
             correct: 1,
-            explanation: "W=1 là một point, W=0 là một direction."
+            explanation: "Rasterization giúp dò quy chiếu và tìm ra tất cả các điểm ảnh (pixels) mà hình chiếu của đối tượng đang che phủ trên màn hình cứng."
+          },
+          {
+            question: "Hai tiến trình lõi mà trình Rasterizer luôn thực hiện đối với mỗi đối tượng là gì?",
+            options: ["Vertex shading và Pixel shading", "Triangle setup và Triangle traversal", "Model matrix và View matrix", "Forward rendering và Deferred shading"],
+            correct: 1,
+            explanation: "Quy trình này luôn bắt đầu bằng việc thiết lập phương trình cạnh tam giác (Triangle setup) và duyệt toàn bộ pixels bao phủ bên trong tam giác đó (Triangle traversal)."
+          },
+          {
+            question: "Giai đoạn nào trong Render Pipeline giữ trọng trách tính màu sắc cuối cùng của điểm ảnh và tống nó vào bộ đệm màu (Color Buffer)?",
+            options: ["Application Stage", "Geometry Processing", "Vertex Shader", "Fragment Shader (Pixel Processing)"],
+            correct: 3,
+            explanation: "Fragment/Pixel shader xử lý yếu tố hiển thị ở cấp độ điểm ảnh và xuất kết quả mã màu cuối cùng vào Color Buffer để được vẽ ra màn hình."
+          },
+          {
+            question: "Ba định lý cơ bản cấu thành nên một Lighting Model (Mô hình chiếu sáng) tiêu chuẩn là gì?",
+            options: ["Forward, Deferred, Vertex", "Built-in, Universal, High Definition", "Ambient color, Diffuse reflection, Specular reflection", "Point, Directional, Spot light"],
+            correct: 2,
+            explanation: "Mô hình ánh sáng cơ sở tính toán dựa trên tổng hợp của màu môi trường (Ambient), phản xạ khuếch tán (Diffuse) và phản xạ gương (Specular)."
+          },
+          {
+            question: "Đặc điểm nhận diện lớn nhất gây hao tổn tài nguyên của luồng Forward Rendering khi xử lý nhiều nguồn sáng là gì?",
+            options: ["Nó bỏ qua hoàn toàn các nguồn sáng bổ sung", "Nó đòi hỏi sức mạnh CPU quá lớn thay vì GPU", "Với mỗi nguồn sáng bổ sung chiếu vào vật thể, nó sinh ra thêm 1 Draw Call riêng biệt tương ứng (Additional Pass)", "Nó không có khả năng tạo bóng (shadows)"],
+            correct: 2,
+            explanation: "Mỗi đối tượng phải được vẽ lại một lần cho mỗi ánh sáng trực tiếp tác động lên nó. 4 hình Cầu bị 1 đèn rọi vào sẽ chịu tổng cộng 8 Draw Calls (4 Base + 4 Add)."
+          },
+          {
+            question: "Khác với Forward Rendering, điểm mạnh nổi trội tuyệt đối của chuẩn Deferred Shading là gì?",
+            options: ["Hỗ trợ tốt nhất cho mọi thiết bị di động", "Rất nhẹ về xử lý RAM và Memory", "Chỉ tốn duy nhất 1 Lighting Pass để tính toán toàn bộ số lượng nguồn sáng trong không gian", "Dễ viết code hlsl hơn"],
+            correct: 2,
+            explanation: "Do Deferred có khả năng xé lẻ khâu render Geometry và Lighting ra, nên nó có thể xử lý lượng nguồn sáng khổng lồ cùng lúc mà không lo bị đội số Draw Call quá đà."
+          },
+          {
+            question: "Hạn chế mang tính 'chí mạng' rủi ro cao nhất khi bạn dùng Shader Graph (kéo thả) thay vì code HLSL truyền thống?",
+            options: ["Shader Graph cắn quá nhiều RAM máy tính", "Shader Graph không thể tạo được tính năng phức tạp", "Mã shader rất dễ bị vỡ hỏng, không biên dịch biên dịch được nếu nâng cấp phiên bản định kỳ của Unity Project", "Shader Graph không chạy được trên URP"],
+            correct: 2,
+            explanation: "Shader Graph là một Packages độc lập, vì vậy mỗi khi Unity nâng cấp bản nội bộ, graph có thể xung đột và đứt gãy node."
+          },
+          {
+            question: "Quy tắc bắt buộc khi tiến hành phép Nhân 2 Ma Trận (Matrix Multiplication) lại với nhau là gì?",
+            options: ["Cả 2 ma trận đều phải có cỡ 4x4", "Số Cột (columns) trong ma trận thứ 1 phải BẰNG số Hàng (rows) trong ma trận thứ 2", "Hai ma trận cộng lại bằng 0", "Chỉ Nhân được ma trận 4x1 với nhau"],
+            correct: 1,
+            explanation: "Đây là nguyên tắc toán học cơ bản. Nhờ vậy ma trận Transformation 4x4 mới có thể nhân với Vertex vị trí 4x1 để cho ra 1 Vertex vị trí 4x1 tọa độ mới."
+          },
+          {
+            question: "Kênh 'W' (trục không gian thứ tư) trong hệ tọa độ Vector đồng nhất XYZW, nếu có giá trị bằng KHÔNG (0), nó đang ám chỉ điều gì?",
+            options: ["Nó là một Điểm (Point) trên không gian", "Nó là một Lệnh Gọi (Draw call)", "Vị trí không tồn tại", "Nó là một Hướng (Direction) trong không gian"],
+            correct: 3,
+            explanation: "Trong toán học đồng nhất, W=1 sẽ quy chiếu là Point, còn W=0 sẽ quy chiếu thành một vector Hướng (Direction)."
+          },
+          {
+            question: "Tổ hợp siêu Ma trận nổi tiếng UNITY_MATRIX_MVP dùng trong Vertex Shader là viết tắt đại diện cho ba ma trận nào dưới đây?",
+            options: ["Master, View, Pixel", "Model, Vertex, Pipeline", "Model, View, Projection", "Morph, Velocity, Position"],
+            correct: 2,
+            explanation: "M: Model Matrix, V: View Matrix, P: Projection Matrix. Cụm ma trận tổng hợp chuyển hóa điểm từ vị trí vật thể (object-space) sang vị trí ảnh xạ (clip-space)."
           }
         ]
       }
