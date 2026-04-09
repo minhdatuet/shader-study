@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShaderStudy – Học Shader cho Unity</title>
+  <meta name="description" content="Nền tảng học Shader cho Unity bằng tiếng Việt. Lý thuyết có cấu trúc, ví dụ code thực tế, và bài tập trắc nghiệm tương tác." />
+  <meta name="keywords" content="shader, unity, học shader, ShaderLab, HLSL, Cg, tiếng việt" />
+  <meta property="og:title" content="ShaderStudy – Học Shader cho Unity" />
+  <meta property="og:description" content="Học Shader Unity bằng tiếng Việt với lý thuyết có cấu trúc và bài tập trắc nghiệm." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/intro.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────── -->
+  <nav class="intro-nav" role="navigation" aria-label="Điều hướng chính">
+    <a href="index.html" class="nav-logo" aria-label="ShaderStudy trang chủ">
+      <div class="nav-logo-icon" aria-hidden="true">✦</div>
+      ShaderStudy
+    </a>
+    <div class="nav-links" aria-label="Các liên kết điều hướng">
+      <a href="#features" class="nav-link">Tính năng</a>
+      <a href="#curriculum" class="nav-link">Giáo trình</a>
+      <a href="learn.html" class="btn btn-primary" id="nav-cta-btn">Bắt đầu học</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-title">
+
+    <!-- Background -->
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+      <div class="hero-grid"></div>
+    </div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge animate-fade-up">
+          <span class="badge badge-accent">✦ Tiếng Việt · Miễn phí · Unity Shader</span>
+        </div>
+
+        <h1 class="hero-title animate-fade-up delay-100" id="hero-title">
+          Chinh phục<br />
+          <span class="gradient-text">Shader</span> cho Unity
+        </h1>
+
+        <p class="hero-subtitle animate-fade-up delay-200">
+          Học lập trình Shader từ cơ bản đến nâng cao bằng tiếng Việt.
+          Lý thuyết rõ ràng, code ví dụ thực tế, bài tập trắc nghiệm ngay trên trình duyệt.
+        </p>
+
+        <div class="hero-actions animate-fade-up delay-300">
+          <a href="learn.html" class="btn btn-primary" id="hero-start-btn">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+            </svg>
+            Bắt đầu học ngay
+          </a>
+          <a href="#curriculum" class="btn btn-ghost" id="hero-curriculum-btn">
+            Xem giáo trình
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating code preview card -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="shader-preview-card">
+        <div class="shader-card-header">
+          <span class="window-dot dot-red"></span>
+          <span class="window-dot dot-yellow"></span>
+          <span class="window-dot dot-green"></span>
+          <span class="shader-card-filename">MyFirstShader.shader</span>
+        </div>
+        <div class="shader-card-body">
+          <pre><span class="tok-keyword">Shader</span> <span class="tok-string">"Custom/MyFirstShader"</span> <span class="tok-punct">{</span>
+  <span class="tok-keyword">Properties</span> <span class="tok-punct">{</span>
+    <span class="tok-prop">_Color</span> <span class="tok-punct">(</span><span class="tok-string">"Main Color"</span><span class="tok-punct">,</span> <span class="tok-type">Color</span><span class="tok-punct">)</span> <span class="tok-punct">=</span>
+      <span class="tok-punct">(</span><span class="tok-number">1</span><span class="tok-punct">,</span><span class="tok-number">1</span><span class="tok-punct">,</span><span class="tok-number">1</span><span class="tok-punct">,</span><span class="tok-number">1</span><span class="tok-punct">)</span>
+    <span class="tok-prop">_MainTex</span> <span class="tok-punct">(</span><span class="tok-string">"Texture"</span><span class="tok-punct">,</span> <span class="tok-type">2D</span><span class="tok-punct">)</span> <span class="tok-punct">=</span>
+      <span class="tok-string">"white"</span> <span class="tok-punct">{}</span>
+  <span class="tok-punct">}</span>
+  <span class="tok-keyword">SubShader</span> <span class="tok-punct">{</span>
+    <span class="tok-keyword">Pass</span> <span class="tok-punct">{</span>
+      <span class="tok-keyword">CGPROGRAM</span>
+      <span class="tok-comment">// vertex & fragment shaders</span>
+      <span class="tok-prop">#pragma</span> <span class="tok-fn">vertex</span>   vert
+      <span class="tok-prop">#pragma</span> <span class="tok-fn">fragment</span> frag
+      <span class="tok-keyword">ENDCG</span>
+    <span class="tok-punct">}</span>
+  <span class="tok-punct">}</span>
+<span class="tok-punct">}</span></pre>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Stats Row ───────────────────────────────────────────── -->
+  <section class="stats-row" aria-label="Thống kê">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="stat-chapters">0</div>
+          <div class="stat-label">Chương học</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="stat-lessons">0</div>
+          <div class="stat-label">Bài học</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Tiếng Việt</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Lần thử lại</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ────────────────────────────────────────────── -->
+  <section class="features-section" id="features" aria-labelledby="features-title">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">✦ Tính năng</span>
+        <h2 class="section-title" id="features-title">
+          Mọi thứ bạn cần để<br />
+          <span class="gradient-text">thành thạo Shader</span>
+        </h2>
+        <p class="section-desc">
+          Được thiết kế để học hiệu quả — từ lý thuyết đến thực hành, tất cả trong một nơi.
+        </p>
+      </div>
+
+      <div class="features-grid">
+
+        <article class="feature-card animate-fade-up">
+          <div class="feature-icon" aria-hidden="true">📐</div>
+          <h3 class="feature-title">Lý thuyết có cấu trúc</h3>
+          <p class="feature-desc">
+            Nội dung được tổ chức theo chương và bài, từ khái niệm cơ bản đến kỹ thuật nâng cao.
+            Giải thích rõ ràng bằng tiếng Việt dễ hiểu.
+          </p>
+        </article>
+
+        <article class="feature-card animate-fade-up delay-100">
+          <div class="feature-icon" aria-hidden="true">💻</div>
+          <h3 class="feature-title">Code highlight thực tế</h3>
+          <p class="feature-desc">
+            Mỗi bài học có ví dụ code HLSL/ShaderLab được syntax highlight rõ ràng.
+            Copy code chỉ với một cú click.
+          </p>
+        </article>
+
+        <article class="feature-card animate-fade-up delay-200">
+          <div class="feature-icon" aria-hidden="true">🧠</div>
+          <h3 class="feature-title">Trắc nghiệm tương tác</h3>
+          <p class="feature-desc">
+            Mỗi bài học đi kèm bài tập trắc nghiệm với giải thích chi tiết.
+            Kiểm tra ngay kiến thức vừa học và làm lại không giới hạn.
+          </p>
+        </article>
+
+        <article class="feature-card animate-fade-up delay-300">
+          <div class="feature-icon" aria-hidden="true">📊</div>
+          <h3 class="feature-title">Theo dõi tiến độ</h3>
+          <p class="feature-desc">
+            Hệ thống ghi nhớ bài bạn đã hoàn thành.
+            Thanh tiến độ trực quan giúp bạn thấy mình đang ở đâu trong lộ trình.
+          </p>
+        </article>
+
+        <article class="feature-card animate-fade-up delay-400">
+          <div class="feature-icon" aria-hidden="true">🎯</div>
+          <h3 class="feature-title">Unity-first</h3>
+          <p class="feature-desc">
+            Toàn bộ nội dung tập trung vào ShaderLab, Cg/HLSL trong môi trường Unity.
+            Áp dụng được ngay vào dự án thực tế của bạn.
+          </p>
+        </article>
+
+        <article class="feature-card animate-fade-up delay-500">
+          <div class="feature-icon" aria-hidden="true">🔖</div>
+          <h3 class="feature-title">Học theo lộ trình</h3>
+          <p class="feature-desc">
+            Sidebar điều hướng thông minh với cây chương/bài.
+            Di chuyển liền mạch giữa các bài học, không bao giờ bị lạc.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Curriculum ───────────────────────────────────────────── -->
+  <section class="curriculum-section" id="curriculum" aria-labelledby="curriculum-title">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">✦ Giáo trình</span>
+        <h2 class="section-title" id="curriculum-title">
+          Lộ trình học<br />
+          <span class="gradient-text">từng bước một</span>
+        </h2>
+        <p class="section-desc">
+          Nội dung được cập nhật liên tục. Theo dõi để không bỏ lỡ bài mới.
+        </p>
+      </div>
+
+      <div class="curriculum-list" id="curriculum-list" aria-label="Danh sách chương học">
+        <!-- Rendered by intro.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ─────────────────────────────────────────────────── -->
+  <section class="cta-section" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-box">
+        <h2 class="cta-title" id="cta-title">
+          Sẵn sàng viết<br />
+          <span class="gradient-text">Shader đầu tiên?</span>
+        </h2>
+        <p class="cta-desc">
+          Bắt đầu hành trình của bạn ngay hôm nay — hoàn toàn miễn phí.
+        </p>
+        <div class="cta-actions">
+          <a href="learn.html" class="btn btn-primary" id="cta-start-btn">
+            Bắt đầu học ngay →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="intro-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-text">
+          © 2024 ShaderStudy. Được xây dựng với ❤️ cho cộng đồng Unity Việt Nam.
+        </div>
+        <a href="learn.html" class="footer-text" style="color: var(--text-accent);">
+          Vào học →
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Scripts ─────────────────────────────────────────────── -->
+  <script src="js/curriculum.js"></script>
+  <script src="js/intro.js"></script>
+
+</body>
+</html>

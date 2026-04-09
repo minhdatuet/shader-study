@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShaderStudy – Học Shader cho Unity</title>
+  <meta name="description" content="Học Shader Unity: lý thuyết có cấu trúc, code highlight, bài tập trắc nghiệm bằng tiếng Việt." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+  <!-- HLSL language pack for highlight.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/glsl.min.js" defer></script>
+
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/learn.css" />
+</head>
+<body>
+
+  <!-- Mobile backdrop -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+  <div class="learn-shell">
+
+    <!-- ── Sidebar ──────────────────────────────────────────── -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Nội dung bài học">
+
+      <div class="sidebar-header">
+        <a href="index.html" class="sidebar-logo" aria-label="ShaderStudy trang chủ">
+          <div class="sidebar-logo-icon" aria-hidden="true">✦</div>
+          ShaderStudy
+        </a>
+        <button class="sidebar-toggle" aria-label="Đóng/mở sidebar" title="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="sidebar-progress" aria-label="Tiến độ học">
+        <div class="progress-label">
+          <span>Tiến độ</span>
+          <span><span id="progress-label-done">0</span> / <span id="progress-label-total">0</span> bài</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Nav Tree -->
+      <div id="sidebar-nav" class="sidebar-nav" aria-label="Danh sách chương và bài học">
+        <!-- Rendered by sidebar.js -->
+        <div style="padding: 24px 20px; text-align: center; color: var(--text-muted); font-size: 13px; line-height: 1.6;">
+          <div style="font-size: 32px; margin-bottom: 12px;">⏳</div>
+          <p>Đang tải nội dung...</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <a href="index.html" class="sidebar-footer-link" aria-label="Về trang chủ">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+          </svg>
+          Trang chủ
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- ── Content Area ──────────────────────────────────────── -->
+    <div class="content-area">
+
+      <!-- Top Bar -->
+      <div class="content-topbar" role="banner">
+        <button class="topbar-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+
+        <nav class="topbar-breadcrumb" aria-label="Breadcrumb">
+          <span id="breadcrumb-chapter" class="breadcrumb-chapter"></span>
+          <svg class="breadcrumb-sep" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"
+               style="color: var(--text-muted);" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          </svg>
+          <span id="breadcrumb-lesson" class="breadcrumb-lesson">Chào mừng</span>
+        </nav>
+
+        <div class="topbar-actions">
+          <a href="index.html" class="btn btn-ghost"
+             style="padding: 6px 14px; font-size: 13px;"
+             aria-label="Về trang chủ">
+            ← Trang chủ
+          </a>
+        </div>
+      </div>
+
+      <!-- Main lesson content -->
+      <main id="lesson-content" class="content-main" aria-live="polite" aria-label="Nội dung bài học">
+        <!-- Rendered by lesson.js -->
+        <div class="welcome-state animate-fade-in">
+          <div class="welcome-icon" aria-hidden="true">🚀</div>
+          <h1 class="welcome-title">Đang tải...</h1>
+          <p class="welcome-desc">Vui lòng chờ trong giây lát.</p>
+        </div>
+      </main>
+
+    </div><!-- /content-area -->
+
+  </div><!-- /learn-shell -->
+
+  <!-- ── Scripts ───────────────────────────────────────────── -->
+  <script src="js/curriculum.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/lesson.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
