@@ -31,6 +31,50 @@ window.ShaderStudy.Theory["ch2-l1"] = `
           <p>Tại vùng lập trình ShaderLab, chúng ta có thể định nghĩa bằng tay nhiều lớp properties và các khối commands, đơn cử ở đây chính là khối dự phòng an toàn <strong>Fallback</strong> block, tương thích liền mạch với các chủng loại render pipelines hiện hành đang có mặt trên thị trường.</p>
           <p>Fallback đích xác là một block căn bản nền tảng đối với các tựa game đa nền chuẩn multiplatform. Trọng trách của nó là cho phép trình biên dịch trỏ qua biên dịch một mã lệnh shader hoàn toàn khác rẽ nhánh ngay khoảnh khắc shader đang dùng sinh mã lỗi sinh error. Nếu cái shader bị phá hỏng trong công đoạn biên dịch (compilation process), Fallback sẽ quăng trả lại một thể shader thay thế vào khuôn hình, và thế là, phần mềm phần cứng đồ họa thỏa sức tiếp tục duy trì hoạt động làm việc nhịp nhàng qua ngày.</p>
           <p><strong>SubShader</strong> là danh xưng cho một khối lệnh block đỉnh cao khác chễm chệ trong ShaderLab, khối block này cấp quyền để chúng ta khai báo trớt lọt các khối commands (các câu lệnh) và liên tiếp sản sinh chuỗi passes. Khi được viết dưới ngôn ngữ Cg/HLSL, trọn vẹn cấu trúc bên trong một shader hoàn toàn có thể ôm gọn cưu mang nhiều SubShaders nội tại hoặc đa số chuỗi lượt pass chèn đè, thề tuy nhiên, trong trường hợp liên hệ Scriptable RP, thì một shader đành đóng khuôn hạn chế và cũng chỉ có thể chứa duy nhất một thẻ pass nhõn cho mỗi một SubShader mặt của nó thôi.</p>
-          <h2 id="2.0.5">2.0.5. Unlit Shader</h2>
-          <p>Không bị ảnh hưởng bởi ánh sáng, phù hợp cho thiết bị cấu hình thấp.</p>
+          <h2 id="2.0.3">2.0.3. Shader types</h2>
+          <p>Để bắt đầu tạo ra một shader, trước tiên chúng ta phải khởi tạo một project mới trong Unity. Nếu bạn đang sử dụng Unity Hub, nhà phát triển khuyến nghị nên tạo project ở các phiên bản phần mềm gần đây nhất (ví dụ: 2019, 2020 hoặc 2021).</p>
+          <p>Chúng ta sẽ cần một <strong>3D template</strong> tích hợp sẵn <strong>Built-in RP</strong> để tạo điều kiện thuận lợi nhất nhằm thấu hiểu ngôn ngữ lập trình đồ họa. Khi thư mục project đã được thiết lập xong, chúng ta nhấp chuột phải vào cửa sổ <strong>Project Window</strong> (phím tắt <code>Ctrl + 5</code> hoặc <code>Cmd + 5</code>), trỏ đến thẻ <strong>Create</strong> và chọn tùy chọn <strong>Shader</strong>.</p>
+          
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 2.0.3a</span>
+              <span class="fig-placeholder-path">assets/ch2/fig_2_0_3a.png</span>
+            </div>
+            <figcaption>Hình 2.0.3a: Chúng ta có thể đạt được cùng một kết quả cài đặt nếu đi theo đường dẫn Assets / Create / Shader trên hệ thanh công cụ.</figcaption>
+          </div>
+
+          <p>Như chúng ta có thể thấy, có nhiều hơn một loại shader ở đây, trong số đó trải đều những cái tên quen thuộc:</p>
+          <ul>
+            <li>Standard Surface Shader.</li>
+            <li>Unlit Shader.</li>
+            <li>Image Effect Shader.</li>
+            <li>Compute Shader.</li>
+            <li>Ray Tracing Shader.</li>
+          </ul>
+          <p>Danh sách đề xuất các đuôi shaders này rất có thể sẽ có sự dao động không ngừng tùy thuộc vào thế hệ phiên bản Unity được sử dụng để khởi tạo project lúc đó. Một biến số tham chiếu khác có thể tác động đến số lượng các shaders xuất đầu lộ diện trong danh sách này chính là <strong>Shader Graph</strong>. Nếu project được kiến tạo bằng môi trường <strong>Universal RP</strong> hay <strong>High Definition RP</strong>, nó có thể đã được tự động bơm sẵn gói package Shader Graph từ trong trứng nước, điều mà chắc chắn sẽ làm tăng số lượng danh mục type shaders có thể tạo ra qua menu.</p>
+          <p>Tạm thời trong thời gian tới, chúng ta sẽ chưa vội vã đi sâu vào chi tiết bóc tách về chủ đề này; do chúng ta phải hiểu thấu đáo vài khái niệm cốt lõi trước khi lao vào với những kiến thức nâng cao đó, bởi vậy chúng ta sẽ chỉ thu hẹp bản thân trong việc cày cuốc với những đuôi shaders tự động đi kèm mặc định (come by default) trong nền tảng nhóm <strong>Built-in RP</strong>.</p>
+          <p>Tuy vậy, trước khi nhào nặn ra chiếc shader đầu tiên của mình, chúng ta vẫn sẽ dành thời gian thực hiện một bài đánh giá thu nhỏ gọn gàng về các chủng loại shader khác nhau đang hiện hữu trong lòng phần mềm engine này.</p>
+
+          <h2 id="2.0.4">2.0.4. Standard surface shader</h2>
+          <p>Khuôn mẫu shader này được định dạng bởi khả năng tối ưu hóa sâu trong khâu viết từ vựng mã code chuyên biệt để nó kết nối tương tác cực chặt chẽ với một mô hình ánh sáng cơ bản (basic lighting model) và rào cản là nó chỉ nhận lệnh làm việc túc trực trong môi trường <strong>Built-in RP</strong>. Nếu chúng ta nhắm tới mục đích đẽo ra một mảng shader có khả năng năng tương tác phơi sáng (interacts with light), chúng ta có hai định hướng lựa chọn như sau:</p>
+          <ol>
+            <li>Rinh một chiếc Unlit Shader thô sơ vào và tự tay thủ công vỗ thêm một mớ ti tỉ các hàm toán học (mathematical functions) phức tạp lằng nhằng nhằm mục đích mở khóa quyền kết xuất quang học (lighting rendering) đè lên bề mặt đối tượng vật liệu.</li>
+            <li>Hoặc cách mạng hơn là dùng luôn một mảnh <strong>Standard Surface Shader</strong> ăn sẵn, thứ vốn dĩ đã được trang bị tới tận răng một mô hình chiếu sáng cơ sở mà trong đa phần các trường hợp nó đã thầm bao hàm đầy đủ dữ liệu móng như <strong>albedo</strong> (màu bản thể), <strong>specular</strong> (phản xạ gương sắc nét), và <strong>diffuse</strong> (phản xạ khuếch tán bề mặt thô).</li>
+          </ol>
+
+          <h2 id="2.0.5">2.0.5. Unlit shader</h2>
+          <p>Chữ "Lit" có nghĩa là ám chỉ một hệ mặt đối tượng nguyên liệu bị thay đổi bởi tính chất chiếu sáng (illumination), và như thế nhóm "Unlit" hoàn toàn đại diện cho một ý nghĩa trái ngược vô ưu. Loại vật thể mang cấu trúc Shader Unlit tự liên hệ bản thân đến với những mô hình màu sắc thuần túy (primary color model) và mặc nhiên nó sẽ được ưu tiên bốc làm cấu trúc khung sườn nền tảng mà chúng ta thường hay sử dụng làm đệm bàn đạp để dấy tạo các hiệu ứng đồ họa cá nhân sau này. Loại thiết lập tinh gọn này, thực ra rất lý tưởng cho những cấp độ phần cứng thấp bét (low-end hardware) vì vốn dĩ không tích hợp tính năng tự động tối ưu mã ngầm; chính vì vậy, chúng ta có thể vô tình mục sở thị dòm thấu toàn bộ cấu trúc xương sống định dạng của file và tự do sửa phạt uốn xoắn nó tùy sức theo nhu cầu tinh chỉnh. Tính năng tuyệt nhất của dòng thác này là nó nịnh bợ trung thành trên cả 2 trạm thiết bị <strong>Built-in</strong> lẫn <strong>Scriptable RP</strong>.</p>
+
+          <h2 id="2.0.6">2.0.6. Image effect shader</h2>
+          <p>Nếu xét về mặt hình hài kết cấu thì kiểu dáng tổ chức của nó giống đến kinh ngạc với một đuôi khuôn Unlit Shader. Image effects (Hiệu ứng hình mảng) được đem ra công chiếu triển khai chủ yếu đóng đinh trong những khâu độ họa hậu kỳ (post-processing effects) nếu project chạy chuẩn Built-in RP, ngoài lề chúng còn giơ yêu sách bắt buộc phải ghim gọi lệnh function "<code>OnRenderImage</code>" (trong nền móng mã <strong>C#</strong>) kèm cặp đính kèm.</p>
+
+          <h2 id="2.0.7">2.0.7. Compute shader</h2>
+          <p>Khuôn mẫu lập trình khủng này được đánh giá cao bởi khả năng chễm chệ chạy trơn tru nhịp nhàng trên thẳng nền tảng card màn hình đồ họa (graphics card), nằm hoàn toàn ngoài luồng lề chuỗi render pipeline truyền thống (normal render pipeline), và điều này vô tình dễ hiểu làm cho hệ kết cấu xương sườn gốc của nó khác biệt như ngày với đêm khi lấy ra soi xét so với hàng loạt nhóm shaders đã vinh danh phía trên bục.</p>
+          <p>Thật sự khác biệt rất lớn so với nhóm shader phổ thông (common shader), chiếc đuôi định dạng mở rộng mà Compute Shader mang theo người có cái tên là "<code>.compute</code>" và ngỡ ngàng hơn đi kèm cùng việc đó là loại ngôn ngữ lập trình được sử dụng để nói chuyện với bộ phận này lại là loại <strong>HLSL</strong> chuẩn. Compute Shaders mang danh nghĩa là thứ vũ khí được sử dụng đặc cách trong một số phân cảnh yêu cầu đặc thù cốt để đẩy tua (speed up) tốc độ tính toán phần cứng cho một khối lượng dữ liệu khổng lồ của trò chơi.</p>
+          <p>Phân chương thứ 3 của cuốn bí kíp dắt lưng này sẽ ngồi review lại chi tiết cặn kẽ mẫu lập trình đầy uy lực trên.</p>
+
+          <h2 id="2.0.8">2.0.8. Ray tracing shader</h2>
+          <p><strong>Ray Tracing Shader</strong> là một phân loài chương trình mang đậm tính chất thử nghiệm vỹ mô (experimental program) với chiếc đuôi mở rộng mang tên "<code>.raytrace</code>". Điểm mấu chốt là tự nó ban cho GPU tính năng thực thi phán đoán truyền dò tia đổ bóng vật lý (Ray Tracing processing). Tuy nhiên, quyền năng kinh hoàng này chỉ hoạt động duy nhất ở phân vùng dự án <strong>High Definition RP</strong> (HDRP) cũng như còn phải đèo bồng khá nhiều rào cản kỹ thuật giới hạn ở móng nền tảng. Nếu ước vọng là làm việc cọ xát với nền công nghệ quái vật DXR (DirectX Ray Tracing) khét tiếng, chúng ta bị ép bắt buộc trang bị vũ trang tối thiểu một con quái thú xử lý card đồ họa <strong>GTX 1080</strong> hoặc các loại dàn máy siêu hạng tương đương ăn chơi chức năng bật phần cứng RTX support, chạy cài đặt tối thiểu phiên bản <strong>Windows 10 version 1809+</strong> cũng như cõng bộ engine lõi Unity 2019.3b1 đổ lên đời mới nhất.</p>
+          <p>Chúng ta có thể cậy nhờ vào thứ loại chương trình hạng xịn này để thay thế thế chỗ phế truất luôn dòng "<code>.compute</code>" type shader hòng tính toán nhai gọn các khối thuật toán xử lý dữ liệu truyền hình dò tia phóng (ray-casting), ví dụ điển hình nhức nách như: chiếu sáng toàn cục (global illumination), độ bóng mượt (reflections), hiện tượng khúc xạ ánh sáng (refraction) hoặc nảy tính tụ quang chùm tia nắng (caustic).</p>
 `;
