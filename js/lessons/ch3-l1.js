@@ -291,6 +291,9 @@ Shader "InspectorPath/shaderName"
               <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 3.0.7a</span>
               <span class="fig-placeholder-path">assets/ch3/fig_3_0_7a.png</span>
             </div>
+            <figcaption>Hình 3.0.7a: Diện mạo Material property drawer phô bày ra ở khối Inspector.</figcaption>
+          </div>
+
           <h2 id="3.0.8">3.0.8. MPD Toggle</h2>
           <p>Bên trong ShaderLab, chúng ta không thể sử dụng các thuộc tính kiểu boolean, thay vào đó, chúng ta có Toggle thực hiện chức năng tương tự. Nút bật (drawer) này sẽ cho phép chuyển đổi từ trạng thái này sang trạng thái khác bằng cách sử dụng một điều kiện bên trong shader của chúng ta. Để chạy nó, trước tiên chúng ta phải thêm từ <code>Toggle</code> vào trong dấu ngoặc vuông và sau đó khai báo thuộc tính của chúng ta, lưu ý rằng nó phải là kiểu Float. Giá trị mặc định của nó phải là một số nguyên, là 0 hoặc 1, tại sao? Vì 0 tượng trưng cho "Off" (Tắt) và 1 tượng trưng cho "On" (Bật).</p>
           <p>Cú pháp của nó như sau:</p>
