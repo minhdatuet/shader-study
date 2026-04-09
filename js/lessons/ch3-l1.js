@@ -171,6 +171,45 @@ Shader "USB/USB_simple_color"
 }</code></pre>
 
           <p>Kể tận cùng có một mệnh đề tối cao cấp thiết cần phải luôn luôn thấu đáo cân nhắc tạc nhớ đó là một khi chúng ta đẻ khai báo ra một loại mảng property, trạng thái của nó sẽ vĩnh viễn duy trì ở chu trình "cởi mở" (open) lơ lửng ngay bên phía trong mạn sườn trường tính năng thuộc tính của ShaderLab, hệ quả kéo theo sau cùng của sự thật ngang trái này là chúng ta buộc phải tìm cách lẩn trốn, cách ly <strong>TUYỆT ĐỐI TRÁNH SỬ DỤNG</strong> dấu chấm phẩy (<code>;</code>) nhằm mục đích chặn ngang kết hạn của dòng mã code trong phạm vi thuộc địa vùng code Block này, nếu chống chế làm ngược lại, hệ phần cứng phân tích GPU sẽ tức khắc chết đứng máy và hoàn toàn khước từ rũ bỏ không thể biên dịch xử lý đọc nổi cả khối chương trình shader đó.</p>
+
+          <h2 id="3.0.4">3.0.4. Number and slider properties</h2>
+          <p>Các kiểu loại thuộc tính (properties) thông dụng này có sứ mệnh ban quyền cho phép chúng ta nhồi nhét móc nối thêm các dải giá trị số học (numerical values) vào ngay bên trong não bộ shader. Thử đặt một sự giả định là chúng ta đang đau đáu tạo ra một shader nhúng chức năng ngậm phơi sáng (illumination), nơi quy ước hệ số "không" (zero) thì tương đương sức mạnh ánh sáng xập xệ ở mức 0% và hệ số trần "một" (one) thì vót tới đỉnh vinh quang sáng lóa 100%. Đáp lại, chúng ta được phép vẽ tạo ra một thanh trượt giá trị khống chế dao động biểu thị cho cái mảng này bằng mảng cú pháp <code>Range(min, max)</code> và dĩ nhiên toàn quyền cài đặt cấu trúc cho nó các mức giá trị từ nhỏ xíu tối thiểu (minimum), đến khổng lồ kịch kim (maximum) và cả sức gánh đệm lót ban đầu (default).</p>
+          <p>Cú pháp cốt tủy dưới đây minh họa việc khai phá dữ liệu khai báo nhóm chữ số và thiết lập thanh trượt (slider) trong kết cấu shader:</p>
+
+          <pre><code>// name ("display name", Range(min, max)) = defaultValue
+// name ("display name", Float) = defaultValue
+// name ("display name", Int) = defaultValue
+
+Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        _Specular ("Specular", Range(0.0, 1.1)) = 0.3
+        _Factor ("Color Factor", Float) = 0.3
+        _Cid ("Color id", Int) = 2
+    }
+}</code></pre>
+
+          <p>Ở ngay ví dụ trực quan bên trên thì cá nhân chúng ta đã điểm danh trớt lọt khai báo 3 properties cồm cộm: một tham số thuộc định dạng "thanh trượt giá trị thực" (floating range) với bí danh là <code>_Specular</code>, tham số thứ yếu tiếp theo lại mang dáng dấp là một "tỷ lệ số thực" (floating scale) gắn tên mã <code>_Factor</code>, và rốt cuộc ở phút cuối cùng là sự chào sân của chủng loại kiểu số "nguyên" (integer) đội nón bí danh <code>_Cid</code>.</p>
+
+          <h2 id="3.0.5">3.0.5. Color and vector properties</h2>
+          <p>Dựa đâm nhờ vào sức mạnh của nhóm property này, việc định nghĩa ấn định cấu hình màu sắc (colors) và tọa độ hướng (vectors) trong vòng vây lõi shader trở nên luôn trong tầm tay.</p>
+          <p>Chúng ta lại lôi góc nhìn lên diễn đàn đem ra giả định rằng chúng ta có tham vọng sáng tạo bằng được một shader tự vỗ kích năng lực thiên biến vạn hóa tự thay đổi các dải màu sắc biến ảo trong quá trình trò chơi đang nhào nặn thực thi hiển thị (execution time), nhằm đạt tới viễn cảnh đó là chúng ta bắt buộc ép mình phải thiết lập móc một con color property cắm thẳng ra bản đồ mặt tiền để nơi đó thao tác bóp nắn, biến đổi nhào trộn thay số cho các vạch giá trị hệ màu RGBA của con shader kia.</p>
+          <p>Đơn giản chỉ việc dùng khối cấu trúc lệnh sau để móc ngoặc rào đón thành phần hệ Colors và Vectors tham chiến vào mặt trận shader:</p>
+
+          <pre><code>// name ("display name", Color) = (R, G, B, A)
+// name ("display name", Vector) = (0, 0, 0, 1)
+
+Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        _Color ("Tint", Color) = (1, 1, 1, 1)
+        _VPos ("Vertex Position", Vector) = (0, 0, 0, 1)
+    }
+}</code></pre>
+
+          <p>Nhìn chớp qua trong cái ví dụ phía trên này, chúng ta đã lôi ra khai báo trót lọt hai thành phần properties mới toanh, một ả mang hệ "color" sắc đẹp che phủ với bí danh là <code>_Color</code> và mặt mảng gồ ghề cứng cỏi còn lại chính là kiểu tham số đồ họa "tọa độ vector" nắm đầu tên xưng danh <code>_VPos</code>.</p>
           <h2 id="3.0.8">3.0.8. MPD Toggle</h2>
           <p>Dùng <code>[Toggle]</code> với <code>#pragma shader_feature</code>. Hằng số trong code sẽ có hậu tố <code>_ON</code>.</p>
 `;
