@@ -210,6 +210,90 @@ Shader "InspectorPath/shaderName"
 }</code></pre>
 
           <p>Nhìn chớp qua trong cái ví dụ phía trên này, chúng ta đã lôi ra khai báo trót lọt hai thành phần properties mới toanh, một ả mang hệ "color" sắc đẹp che phủ với bí danh là <code>_Color</code> và mặt mảng gồ ghề cứng cỏi còn lại chính là kiểu tham số đồ họa "tọa độ vector" nắm đầu tên xưng danh <code>_VPos</code>.</p>
+          <h2 id="3.0.6">3.0.6. Texture properties</h2>
+          <p>Nhóm properties thú vị này cấp quyền cho phép chúng ta cài cắm áp dụng các loại bề mặt ảnh vân (textures) vào cấu trúc shader của mình.</p>
+          <p>Thuận theo lẽ thường nếu chúng ta có khao khát đặt ốp dán một lớp ảnh bề mặt texture lên mặt đối tượng của mình (đơn cử ví dụ đối tượng là một character nhân vật 3D), thì khi đó chúng ta sẽ bắt buộc khởi tạo ra một property hệ <code>2D</code> cho mặt texture đó và rồi sau cùng thông quan luân chuyển nó chui lọt qua một function có danh xưng là "<code>tex2D</code>", thứ hàm khắt khe mà sẽ vòi vĩnh bắt chúng ta khai báo đủ bộ hai parameters (tham số): thứ nhất là bộ khung tham chiếu texture và thứ hai là chuỗi tọa độ định vị UV (UV coordinates) của vật thể đích.</p>
+          <p>Một loại property khác mang hệ số tương đương mà chúng ta vô tình sẽ lôi ra sử dụng như ăn cơm bữa trong các dự án trò chơi video chính là "<code>Cube</code>" thứ tự đại diện trỏ thẳng đến khái niệm kết tạo "Cubemap" (bản đồ hộp không gian). Loại hình hoa văn texture dạng này tỏ ra đặc biệt bùng nổ độ hữu dụng mạnh mẽ khi được dùng khởi tạo các mảng bản đồ phản xạ (reflection maps), ví dụ điển hình: hiện tượng phản chiếu ánh sáng chói lóa lập lòe trên bộ áo giáp của nhân vật hay nới rộng ra là đổ bóng trên bất kỳ thành phần vật liệu kim loại (metallic) nào nói chung.</p>
+          <p>Ngoài lề, có một vài chủng loại textures lai căng khác mà chúng ta có thể bới móc tìm thấy như loại hình hệ <code>3D</code> type. Tuy nhiên thành thật mà nói chúng rớt hạng, bị đẩy xuống sử dụng với tần suất ít ỏi hơn hẳn khi đặt lên bàn cân với những kẻ tiền bối vừa điểm mặt ở trên, chung quy do bản tính sinh ra là để chuyên trách cấu trúc biểu diễn dữ liệu thể tích tích tụ (volumetric) và vì lẽ đó chúng luôn luôn đè đầu đòi hỏi phải nướng thêm thông số hệ tọa độ bổ sung (additional coordinate) chỉ để gánh vác cho quá trình tính toán phỏng đoán hình học không gian (spatial calculation) tốn kém của chúng.</p>
+          <p>Dưới đây là sơ đồ bộ cú pháp chuẩn (syntax) chuyên trách thực thi khai báo tiêm textures vào shader của chúng ta:</p>
+
+          <pre><code>// name ("display name", 2D) = "defaultColorTexture"
+// name ("display name", Cube) = "defaultColorTexture"
+// name ("display name", 3D) = "defaultColorTexture"
+
+Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+        _Reflection ("Reflection", Cube) = "black" {}
+        _3DTexture ("3D Texture", 3D) = "white" {}
+    }
+}</code></pre>
+
+          <p>Phải đặc biệt cực kỳ để tâm nhét vào đầu rằng mỗi bận khai báo định nghĩa một mặt property, vòng lưu ý sống còn nằm ở chỗ bản danh tính property đó thực chất sẽ chỉ được hiểu và viết độc quyền thuần túy bằng ngôn ngữ khai báo declarative <strong>ShaderLab</strong>, trong kho đó tàn khốc thay thứ lõi chương trình (program) đồ họa thực sự của chúng ta chạy bên trong nó lại bị ràng buộc phải được chắp bút viết bằng ngôn ngữ <strong>Cg</strong> hoặc là <strong>HLSL</strong>. Chấp nhận sự thật phũ phàng rằng do chúng thuộc hai phân loài ngôn ngữ lai căng bất đồng hoàn toàn tách biệt, hệ quả là chúng ta bị ép rào vội xây dựng nên các "biến số kết nối liên lạc" (<strong>connection variables</strong>).</p>
+          <p>Các variables kiều này xưa nay được mặc định khai báo phủi bay phạm vi thông qua các từ khóa toàn cục như "<code>uniform</code>", thế tuy nhiên, bước rườm rà này thực ra hoàn toàn có thể bị gạch bỏ nhảy cóc qua đi lẹ vì chương trình thông dịch ngầm dĩ nhiên thừa não lôi tự động nhận dạng xếp chúng vào thành mảng "global variables" ngay tắp lự. Vì thế, tóm lại nôm na để bơm cấp thành công một property vào trong một file định dạng mở rộng "<code>.shader</code>", lọt tai thì đầu tiên chúng ta buộc phải khai báo (declare) cái mảng property ấy ngoài vùng thềm sân ShaderLab, rồi lạch bạch tạo ra khối "global variable" (trong lòng phân đoạn Cg/HLSL) khoác y lệnh cái bảng tên y xì đúc đồng bộ nhau như hình với bóng, và sau cuối của sự trầy trật đó, chúng ta mới được cấp quyền tự do lôi nó ra mà ứng dụng sử dụng trải nghiệm (used).</p>
+
+          <pre><code>Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        // 1. Phôi thai nặn định hình (declare) khởi tạo các properties ở đây
+        _MainTex ("Texture", 2D) = "white" {}
+        _Color ("Color", Color) = (1, 1, 1, 1)
+    }
+    SubShader
+    {
+        Pass
+        {
+            CGPROGRAM
+            // ...
+            
+            // 2. Chèn móc các biến số ngầm làm cầu nối (connection variables) ở đây
+            sampler2D _MainTex;
+            float4 _Color;
+            
+            // ...
+            
+            half4 frag (v2f i) : SV_Target
+            {
+                // 3. Phép màu bắt đầu: Tự do lôi variables sử dụng nhào nặn trong đây
+                half4 col = tex2D(_MainTex, i.uv);
+                return col * _Color;
+            }
+            ENDCG
+        }
+    }
+}</code></pre>
+
+          <p>Săm soi lại trong cái góc ví dụ demo phía trên, cá nhân chúng ta đã thành công xướng tên khai báo ra hai properties mang định danh: <code>_MainTex</code> và <code>_Color</code>. Mạch tiếp theo liển mạch chúng ta nắn gân nhồi luôn hai dải "biến liên kết" (connection variables) nằm chìm an toàn nấp trong khối <code>CGPROGRAM</code>, điểm mặt gọi tên ngầm định tưng ứng chúng mang dáng dấp cấu trúc lần lượt là "<code>sampler2D _MainTex</code>" đi đôi nhịp nhàng với "<code>float4 _Color</code>". Một điểm chốt sống còn là cả hai đối tượng (mảng property nguyên thủy và cái mảng biến connection variable) bắt buộc như hình với bóng <strong>PHẢI KHOÁC CHUNG MỘT CÁI TÊN GỌI KHÔNG LỆCH NHAU DẤU PHẨY MẢY MAY</strong>, chỉ bằng chìa khóa đó nền tảng phía trong khu vườn chương trình mới mở cửa có khả năng chắp vá ghi nhận (recognize) truy xuất được chúng.</p>
+          <p>Trong khuôn khổ của chuyên mục 3.2.7 lùi lại phía sau, chúng ta sẽ gài số lùi phanh khui bóc tách ra cặn kẽ chân tơ kẽ tóc ngọn nguồn quy trình cách thức hoạt động lọt khe của một mảng <code>2D sampler</code> đúng chuẩn thời điểm chúng ta vác nhau qua thảo luận chủ đề xoay quanh định dạng dữ liệu (data types).</p>
+
+          <h2 id="3.0.7">3.0.7. Material property drawer</h2>
+          <p>Kể thêm câu chuyện thì có một thứ nhánh properties lai căng siêu đặc biệt khác mà chúng ta có diễm phúc tóm được trong cái kho ngôn ngữ ShaderLab được biết đến rộng rãi với cái tên là "<strong>drawers</strong>" (ngăn kéo). Lớp cấp (class) thú vị này đặc quyền ban cho chúng ta năng lực đẻ hoang khai sinh phôi thai ra vô số các custom properties dị biệt móc thẳng ra trên panel ngai vàng Unity Inspector, từ đó trực tiếp tạo ra bệ phóng tuyệt phẩm biến quá trình phôi thai code lập trình định hình hệ thống điều kiện logic rẽ nhánh (conditionals logic) cắm rễ trong lòng bộ ruột của shader trở thành thứ vô cùng dễ thở thoang thoảng mượt mà hơn.</p>
+          <p>Thực tế thuận theo mặc định gốc tự nhiên, cái mảng hệ dòng property trơn trượt này vốn dĩ chẳng bao giờ mặc định được nhồi nhét nêm nếm có mặt sẵn trong ruột bộ khung khởi tạo file shader lúc phôi thai đâu, thay vì chờ đợi, chúng ta vác trách nhiệm nhọc thân tự tay thủ công khai báo cắm rễ chúng sao cho hợp lý và đi khớp cùng cái nhu cầu tùy chỉnh. Ngược dòng điểm mặt cho đến tận thời đại ngày nay, ngót nghét tổng hợp đã có tròn 7 hình hài phân nhánh mảng ngăn kéo "drawers" lừng lẫy như sau:</p>
+          <ul>
+            <li><code>Toggle</code>.</li>
+            <li><code>Enum</code>.</li>
+            <li><code>KeywordEnum</code>.</li>
+            <li><code>PowerSlider</code>.</li>
+            <li><code>IntRange</code>.</li>
+            <li><code>Space</code>.</li>
+            <li><code>Header</code>.</li>
+          </ul>
+          <p>Dĩ nhiên mỗi cá thể ngưng đọng trong tập hợp chúng thầm ôm ấp riêng đong đo phân phát cho một sứ mệnh cụ thể đặc sắc phơi phới chuyên trách thực thi một chùm function nhất định định hình cá nhân và cũng đi kèm quyền năng khai báo thao tác cắm lệnh hoàn toàn độc lập (independently).</p>
+          <p>Phải nói cám ơn nồng hậu đến rổ nhánh properties này, qua đó chúng ta có nền tảng dễ dàng sản sinh ra vô lượng số trạng thái (states) biến ảo bên trong não bộ chương trình khối code, trực tiếp bật xanh đèn cho phép tạo ra các hiệu ứng hình ảnh sống động liên hoàn mang khuynh hướng ứng động (dynamic effects) – ngạc nhiên nhất là thoát khỏi nhu cầu phải thay cả khối vật liệu (materials) trực tiếp vào lúc hiển thị đang vận hành (execution time).</p>
+          <p>Thông lệ chúng ta thường đi gộp nhét đóng gói vận hành hệ thống drawers này đi thành cặp bài chung với 2 thứ công cụ hệ phái biến thể shader variants (dạng các lớp biến thể), nôm na uy dũng gọi đích tên là những cú click lệnh: <code>#pragma multi_compile</code> và lệnh <code>#pragma shader_feature</code>.</p>
+          
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 3.0.7a</span>
+              <span class="fig-placeholder-path">assets/ch3/fig_3_0_7a.png</span>
+            </div>
+            <figcaption>Hình 3.0.7a: Diện mạo Material property drawer phô bày ra ở khối Inspector.</figcaption>
+          </div>
+
           <h2 id="3.0.8">3.0.8. MPD Toggle</h2>
           <p>Dùng <code>[Toggle]</code> với <code>#pragma shader_feature</code>. Hằng số trong code sẽ có hậu tố <code>_ON</code>.</p>
 `;
