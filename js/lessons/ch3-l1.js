@@ -291,9 +291,130 @@ Shader "InspectorPath/shaderName"
               <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 3.0.7a</span>
               <span class="fig-placeholder-path">assets/ch3/fig_3_0_7a.png</span>
             </div>
-            <figcaption>Hình 3.0.7a: Diện mạo Material property drawer phô bày ra ở khối Inspector.</figcaption>
-          </div>
-
           <h2 id="3.0.8">3.0.8. MPD Toggle</h2>
-          <p>Dùng <code>[Toggle]</code> với <code>#pragma shader_feature</code>. Hằng số trong code sẽ có hậu tố <code>_ON</code>.</p>
+          <p>Bên trong ShaderLab, chúng ta không thể sử dụng các thuộc tính kiểu boolean, thay vào đó, chúng ta có Toggle thực hiện chức năng tương tự. Nút bật (drawer) này sẽ cho phép chuyển đổi từ trạng thái này sang trạng thái khác bằng cách sử dụng một điều kiện bên trong shader của chúng ta. Để chạy nó, trước tiên chúng ta phải thêm từ <code>Toggle</code> vào trong dấu ngoặc vuông và sau đó khai báo thuộc tính của chúng ta, lưu ý rằng nó phải là kiểu Float. Giá trị mặc định của nó phải là một số nguyên, là 0 hoặc 1, tại sao? Vì 0 tượng trưng cho "Off" (Tắt) và 1 tượng trưng cho "On" (Bật).</p>
+          <p>Cú pháp của nó như sau:</p>
+
+          <pre><code>[Toggle] _PropertyName ("Display Name", Float) = 0</code></pre>
+
+          <p>Như chúng ta thấy, chúng ta thêm <code>Toggle</code> trong ngoặc vuông, tiếp theo chúng ta khai báo thuộc tính, sau đó là tên hiển thị, theo sau là kiểu dữ liệu Float, và cuối cùng chúng ta khởi tạo thuộc tính này sang "Off" bằng cách thêm số 0 vào trong giá trị mặc định của nó.</p>
+          <p>Một điều mà chúng ta phải cân nhắc khi làm việc với drawer này là, nếu chúng ta muốn thực thi nó trong mã code của mình, chúng ta sẽ phải sử dụng <code>#pragma shader_feature</code>. Điều này thuộc về các biến thể của shader (shader variants) và chức năng của nó là hoạt hóa các điều kiện khác nhau tùy thuộc vào trạng thái hiện tại của nó (được bật hoặc đã tắt). Để hiểu cách nó thực thi, chúng ta sẽ làm thao tác sau:</p>
+
+          <pre><code>Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        _Color ("Color", Color) = (1, 1, 1, 1)
+        // khai báo thẻ Toggle
+        [Toggle] _Enable ("Enable ?", Float) = 0
+    }
+    SubShader
+    {
+        Pass
+        {
+            CGPROGRAM
+            // ...
+            // khai báo pragma
+            #pragma shader_feature _ENABLE_ON
+            // ...
+            float4 _Color;
+            // ...
+            
+            half4 frag (v2f i) : SV_Target
+            {
+                half4 col = tex2D(_MainTex, i.uv);
+                // tạo các điều kiện
+                #if _ENABLE_ON
+                    return col;
+                #else
+                    return col * _Color;
+                #endif
+            }
+            ENDCG
+        }
+    }
+}</code></pre>
+
+          <p>Trong ví dụ này, chúng ta đã khai báo một thuộc tính kiểu <code>Toggle</code> có tên là "<code>_Enable</code>". Sau đó chúng ta thêm nó vào <code>shader_feature</code> nằm trong <code>CGPROGRAM</code>, tuy nhiên, trái với thuộc tính trong chương trình của chúng ta, Toggle đã được khai báo thành "<code>_ENABLE_ON</code>", tại sao lại như vậy? Các biến thể được thêm vào trong <code>shader_feature</code> là "các hằng số" (constants) do đó chúng được viết bằng chữ in hoa, có nghĩa là nếu, ví dụ, thuộc tính của chúng ta có tên là <code>_Change</code>, thì khi đưa vào biến thể shader nó nên được thêm dưới dạng "<code>_CHANGE_ON</code>". Từ <code>_ON</code> tương ứng với trạng thái mặc định của Toggle, vì vậy, nếu thuộc tính <code>_Enable</code> hoạt động, chúng ta trả về cấu hình màu texture trong công đoạn fragment shader, ngược lại chúng ta nhân thuộc tính <code>_Color</code> vào chính nó.</p>
+          <p>Điều đáng nói là <code>shader_feature</code> không thể biên dịch nhiều biến thể cho một ứng dụng, điều này có nghĩa là như thế nào? Unity sẽ không bao gồm các biến thể mà chúng ta đang không sử dụng vào trong bản dựng kiểm tra cuối (final build), điều đồng nghĩa là chúng ta sẽ không thể chuyển từ trạng thái này sang định dạng trạng thái khác tại thời điểm thực thi (execution time). Để thực hiện việc này, chúng ta sẽ phải sử dụng loại KeywordEnum drawer mà có biến thể shader là "<code>multi_compile</code>".</p>
+
+          <h2 id="3.0.9">3.0.9. MPD KeywordEnum</h2>
+          <p>Drawer này tạo ra một dạng menu kiểu cửa sổ nổi (pop-up) trong material inspector. Không giống với Toggle, drawer này cho phép bạn định cấu hình lên tới 9 trạng thái khác nhau cho shader. Để thực thi nó, chúng ta phải ghi từ "<code>KeywordEnum</code>" trong dấu ngoặc vuông và sau đó liệt kê những trạng thái mà chúng ta dự định sẽ sử dụng.</p>
+
+          <pre><code>[KeywordEnum(StateOff, State01, etc...)]
+_PropertyName ("Display name", Float) = 0</code></pre>
+
+          <p>Trong ví dụ phần trên, chúng ta thêm ngăn <code>KeywordEnum</code> trong ngoặc vuông, và sau đó chúng ta liệt kê tập trạng thái của nó, nơi mà tham số đầu khớp với cấu hình trạng thái ban đầu mặc định (StateOff). Tiếp tục với quá trình trình khai báo thuộc tính, gắn tên hiển thị trong bộ material inspector, cho kiểu dữ liệu Float của nó và sau cùng, lập tức lấy giá trị này cho giá trị thiết lập ban đầu mặc định.</p>
+          <p>Để khai báo thẻ biến Drawer này ở bên trong đoạn code của chúng ta, chúng ta có thể sử dụng cả hai thẻ phương thức lệnh <code>shader_feature</code> hay là <code>multi_compile</code>. Sự thay đổi lựa chọn sẽ tùy vào thông số số lượng biến thể chúng ta định ghép nhét vào trong tập kịch bản cài đặt ứng dụng cuối cùng (final build).</p>
+          <p>Như chúng ta đã nói qua, <code>shader_feature</code> sẽ chỉ có hoạt năng chịu xuất (export) qua duy nhất lựa chọn đã được người dùng trỏ vào từ phần material inspector, trong khi đó thuộc tính dạng rẽ <code>multi_compile</code> thì trích xuất ra toàn bộ những variants ngầm thấy trong nội tại bộ shader, chẳng thiết bỏ qua chúng có lấy mang thực thi được ứng dụng dùng làm gì hay có không. Tận dụng tính năng này, <code>multi_compile</code> thật lý tưởng cho việc trích xuất hay biên dịch nhiều nhóm thông số trạng thái sẽ đi tới thay đổi ở thời điểm thực thi execution time (ví dụ: đánh trạng thái nhận sao trong Super Mario).</p>
+          <p>Và hiểu sâu áp dụng cho nó, chúng ta nên thực thi hoạt động tương tự sau:</p>
+
+          <pre><code>Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        // khai lệnh KeywordEnum
+        [KeywordEnum(Off, Red, Blue)]
+        _Options ("Color Options", Float) = 0
+    }
+    SubShader
+    {
+        Pass
+        {
+            CGPROGRAM
+            // ...
+            // định danh khai báo pragma và gắn nối điều kiện
+            #pragma multi_compile _OPTIONS_OFF _OPTIONS_RED _OPTIONS_BLUE
+            // ...
+            
+            half4 frag (v2f i) : SV_Target
+            {
+                half4 col = tex2D(_MainTex, i.uv);
+                // thực thi các vòng conditions điều kiện
+                #if _OPTIONS_OFF
+                    return col;
+                #elif _OPTIONS_RED
+                    return col * float4(1, 0, 0, 1);
+                #elif _OPTIONS_BLUE
+                    return col * float4(0, 0, 1, 1);
+                #endif
+            }
+            ENDCG
+        }
+    }
+}</code></pre>
+
+          <p>Tại khuôn ví dụ này, chúng ta định nghĩa mảng một thuộc tính thẻ phân khúc KeywordEnum có dạng "<code>_Options</code>" rồi móc đặt lên bộ thông số cấu hình 3 biến trạng thái nhận sẵn (Off, Red và kèm thẻ Blue). Trong một thời điểm trễ hơn, chúng ta dĩ nhiên gắn chúng gá vào cấu trúc nhóm mở <code>multi_compile</code> tìm được trong phạm vị CGPROGRAM kèm khai báo chúng dạng như constant constants.</p>
+
+          <pre><code>#pragma multi_compile _OPTIONS_OFF _OPTIONS_RED _OPTIONS_BLUE</code></pre>
+
+          <p>Kết liễu chốt, sử dụng tiếp mạch móc lặp móc điều kiện, chúng ta định dạng nên ba mảng trạng thái chạy thông vào khuôn shader để trả lời cho chuyển đổi màu mảng bề mặt phủ chính.</p>
+
+          <h2 id="3.1.0">3.1.0. MPD Enum</h2>
+          <p>Drawer này cấu thành hết sức giống như cấu hình thẻ dạng KeywordEnum nhưng với sự phân định mấu chốt là nhánh này sở hữu thuộc tính phác họa được chức năng cặp chuyển tham số "giá trị/id (value/id)" trỏ như một tham số truyền biến (argument) và chuyển tiếp property này thẳng qua vào phía cho một câu lệnh (command) có mặt trong shader thực thi hòng cấu trúc đổi hướng sự vận hành thiết kế qua nền tảng trực tiếp (dynamically) nhảy nhận thẳng phản ứng tại màn hình inspector thông số.</p>
+          <p>Cú pháp cấu trúc tổng quan nó bày ra như sau:</p>
+
+          <pre><code>[Enum(value, id_00, value, id_01, etc … )]
+_PropertyName ("Display Name", Float) = 0</code></pre>
+
+          <p>Lớp biến dạng mã thông số Enums sẽ không khai mở cấu trúc móc bấu vào các đoạn gán dạng móc thẻ shader variants ra mà ngược là hoàn toàn trơ ra tự chúng thông hiểu ghi cấu hình lệnh qua command lệnh và function thôi. Cho quá trình tiếp thu mảng kiến thức implementation thiết lập này, chúng ta thử mảng ví dụ phía chi tiết bên dưới:</p>
+
+          <pre><code>Shader "InspectorPath/shaderName"
+{
+    Properties
+    {
+        // khai báo thẻ Enum Drawer
+        [Enum(Off, 0, Front, 1, Back, 2)]
+        _Face ("Face Culling", Float) = 0
+    }
+    SubShader
+    {
+        // Ta cắm thẳng property này luồn làm 1 lệnh gọi cấu thành command
+        Cull [_Face]
+        
+        Pass { /*...*/ }
+    }
+}</code></pre>
+
+          <p>Chiếu qua hiện trạng ví dụ như phía trên sau đây, mình thực thi xuất khai báo định hình loại property mang nhãn là "<code>Enum</code>" gọi "<code>_Face</code>" và tụi mình truyền đi vào thông qua dạng thuộc thể argument các values: mốc Off nhét 0, Font thả giá 1, nhẫn Back nhận diện thẻ 2. Kế tiếp bẽ góc mảng đó mình ghim đi luồn property mảng này trỏ vào làm tham số lệnh móc cho một hiệu lệnh chữ rạch ròi "<code>Cull</code>" dải lượn có chôn giấu trong khối SubShader; thao tay thông qua mảng này, chúng ta vồ lấy tính linh đảo luân hồi hoán hình cho lật đối tượng object diện giao tiếp render trực diện bung màn trích xuất từ ngay ô chức năng quản diện thuộc tính material inspector. Bước qua mục số 3.2.1 về sau, chúng ta gặp gỡ lại điểm danh lôi kéo cạn kẽ con thuật chớp lệnh <code>Cull</code> này lên sàn soi thấu đáo.</p>
 `;
