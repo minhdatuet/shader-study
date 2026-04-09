@@ -157,9 +157,63 @@ ShaderStudy.curriculum = [
         quiz: [
           {
             question: "Tại sao Shader lại được thực thi bởi GPU thay vì CPU?",
-            options: ["GPU xử lý song song với hàng ngàn lõi", "GPU tiết kiệm điện hơn"],
+            options: ["GPU xử lý song song với hàng ngàn lõi", "GPU tiết kiệm điện hơn", "CPU thiết kế để xử lý song song", "Tốc độ xung nhịp CPU quá thấp"],
             correct: 0,
-            explanation: "GPU thiết kế để xử lý hàng triệu pixel cùng lúc."
+            explanation: "GPU có thiết kế kiến trúc song song với hàng ngàn lõi nhỏ xíu nhưng hiệu quả để giải quyết các tính toán đồng thời trên từng pixel."
+          },
+          {
+            question: "Phần mở rộng định dạng chuẩn của một tệp shader trong Unity là gì?",
+            options: [".mat", ".cginc", ".shader", ".hlsl"],
+            correct: 2,
+            explanation: "Mặc dù code có thể viết bằng HLSL hay Cg, tệp gốc mang định dạng .shader chứa ngôn ngữ bao bọc ShaderLab."
+          },
+          {
+            question: "Bạn nên tạo một dự án Unity với cấu hình Template nào để dễ đối chiếu thông tin nhất khi bắt đầu học viết Shader cốt lõi (Theo giáo trình)?",
+            options: ["2D Core", "3D with Built-in RP", "High Definition RP", "Universal RP"],
+            correct: 1,
+            explanation: "3D template tích hợp Build-in Render Pipeline cung cấp môi trường cơ sở đơn giản nhất để thấu hiểu đồ họa lập trình ShaderLab."
+          },
+          {
+            question: "Image Effect Shader thường được ứng dụng để thực thi mục đích nào trong Unity?",
+            options: ["Tạo hình bóng (shadow) của một lưới tọa độ", "Đổ màu lên bề mặt model 3D không bị ảnh hưởng bởi ánh sáng môi trường", "Các thao tác tính toán vật lý không cần xử lý hình ảnh", "Thay đổi hình ảnh đầu ra (Post-processing effect) đối với hình ảnh tạo ra bởi một Camera"],
+            correct: 3,
+            explanation: "Image Effect Shader lấy output frame của Camera làm input texture để nhào nặn thành các hiệu ứng Bloom, Blur, Color Grading."
+          },
+          {
+            question: "Loại Shader nào dưới đây tương tác với kiến trúc dựa trên nền tảng tính toán vật lý mô phỏng ánh sáng thật (PBR)?",
+            options: ["Unlit Shader", "Compute Shader", "Standard Surface Shader", "Image Effect Shader"],
+            correct: 2,
+            explanation: "Shader Bề mặt Chuẩn (Standard Surface Shader) tối ưu hóa việc viết shader bằng cách tự động xử lý hệ thống tính toán khối lượng ánh sáng đồ sộ tự động ẩn bên dưới."
+          },
+          {
+            question: "Đặc tính 'Đơn giản nhất, không tương tác với ánh sáng, màu sắc phẳng cứng' là để mô tả loại Shader nào?",
+            options: ["Standard Surface Shader", "Compute Shader", "Unlit Shader", "Ray Tracing Shader"],
+            correct: 2,
+            explanation: "Unlit (Không được chiếu sáng) là loại shader cơ bản nhất trả về đúng nguyên bản màu của nó (base color/texture) mà không cần bận tâm hệ thống ánh sáng."
+          },
+          {
+            question: "Loại Shader nào không phục vụ cho mục đích render điểm ảnh mà thường được sử dụng nhằm mục đích tận dụng lợi thế CPU-song-song (ví dụ: bầy đàn Boids, tính mô phỏng nước)?",
+            options: ["Ray Tracing Shader", "Compute Shader", "Unlit Shader", "Geometry Shader"],
+            correct: 1,
+            explanation: "Compute Shader (kiểu tài nguyên lõi tính toán) đọc và ghi vào buffer nhưng không có vai trò xuất kết xuất điểm ảnh trên màn hình như Graphics Pipeline thường thấy."
+          },
+          {
+            question: "Đường dẫn thao tác nào cho phép bạn khởi tạo một tệp lệnh Shader trên cửa sổ Projects Tool trong Unity?",
+            options: ["Window / Create / Shader", "Ctr + 5 (mở Projects Window) > Chuột phải > Create > Shader", "Component / Add / Shader", "Game Object / Create 3D Object / Shader"],
+            correct: 1,
+            explanation: "Ta luôn phải tạo File Shader như một 'Asset' thuộc quản lý của cửa sổ điều hướng Project."
+          },
+          {
+            question: "Cấu hình CPU được định nghĩa và tạo ra tập trung nhằm xử lý loại quy trình tác vụ máy tính nào chuyên biệt?",
+            options: ["Tác vụ có hàng triệu tiến trình nhỏ giống y chang nhau", "Các tiến trình xử lý đồ họa chuyên sâu", "Mô phỏng vật lý đồng thời nhiều vật thể", "Những xử lý tính toán tiến trình mang yếu tố tuần tự nối tiếp nhau (Sequential serial processing)"],
+            correct: 3,
+            explanation: "CPU có ít lõi nhạy bén cực mạnh để xử lý logic phức tạp, chạy luồng một mạch theo trật tự lớp lang (tuần tự tuần tự), trái ngược hoàn toàn GPU."
+          },
+          {
+            question: "Mục tiêu tối thượng của việc viết code trong môi trường Shader là nhằm mục đích gì đối với vùng màn hình của chúng ta?",
+            options: ["Thiết lập hệ đa giác trên model", "Tối ưu hóa file chứa các model .fbx", "Điều chỉnh màu sắc cho từng pixel bên trong khu vực mà object đang choán lấy điểm ảnh", "Lập trình logic nhân vật trong Game"],
+            correct: 2,
+            explanation: "Code shader về bản chất điều phối các biểu thức toán học chi tiết đặng ra lệnh quyết định màu sắc mỗi từng chấm đen trắng hoặc RGB (pixel) hình dáng vật thể đó in dập lên màn hình."
           }
         ]
       }
@@ -175,10 +229,64 @@ ShaderStudy.curriculum = [
         readingTime: 25,
         quiz: [
           {
-            question: "Trong khối Properties, lỗi nào khiến GPU không đọc được chương trình?",
-            options: ["Dùng dấu chấm phẩy (;) ở cuối dòng", "Dùng dấu ngoặc đơn"],
-            correct: 0,
-            explanation: "ShaderLab Properties không sử dụng dấu chấm phẩy."
+            question: "Trong khối Properties, lỗi nào sẽ khiến GPU chết đứng và không thể tiếp tục đọc biên dịch cả chương trình?",
+            options: ["Sử dụng dấu ngoặc vuông []", "Quên đặt khối Properties lên đỉnh", "Sử dụng dấu chấm phẩy (;) ở cuối đoạn khai báo cấu trúc", "Sử dụng dấu / bình luận"],
+            correct: 2,
+            explanation: "Khi ta khai báo property, trạng thái vẫn 'mở' trong không gian của nó, nếu dùng ; ở cuối dòng lập tức làm chặn hỏng kết hạn code ShaderLab."
+          },
+          {
+            question: "Thành phần <code>InspectorPath</code> ở đầu mục khai báo Shader có tác dụng gì?",
+            options: ["Đường dẫn ổ đĩa C lưu file .shader", "Tên thư mục ảo để tìm chọn file shader này áp vào Material", "Quy định Material đó áp vào Game Object nào", "Lưu đường dẫn URL tới tài liệu online"],
+            correct: 1,
+            explanation: "Path ảo này thể hiện cấu trúc thu gọn Menu đổ dọc trên bảng Material Inspector, giúp ta tùy ý quy hoạch khu cắm file dễ nhìn ngắm thuận mắt."
+          },
+          {
+            question: "Cấu trúc một file Shader chuẩn trong Unity tuân theo trình tự tổng quan nào sau đây từ trên xuống dưới?",
+            options: ["SubShader, Fallback, Shader, Properties", "ShaderName, SubShader, Properties, Fallback", "ShaderName, Properties, SubShader, Fallback", "ShaderName, Properties, Fallback, SubShader"],
+            correct: 2,
+            explanation: "Bất kì shader nào cũng mở đầu bởi đường dẫn Inspector, tiếp đến là mục khai Properties, ôm hết lõi trong SubShader, và mót nhặt phòng ngừa bằng khối Fallback cuối."
+          },
+          {
+            question: "GPU dịch mã theo chiều tuyến tính từ trên xuống dưới. Điều gì sẽ xảy ra nếu ta khai báo định nghĩa một Function thấp dưới dòng gọi Function đó trong khối CGPROGRAM?",
+            options: ["Shader tự sửa lấp lỗi và chạy tiếp", "Hàm sẽ không được Load vào bộ nhớ sinh ra Error Compile", "Sẽ Render ra màu Tím (Pink shader) nhưng không báo lỗi Console", "Biến tự động nhảy thành Cg Global parameter"],
+            correct: 1,
+            explanation: "Do tính tuyến tính, GPU không hiểu hàm bạn gọi là gì sinh ra Error (lỗi), bắt Fallback hoạt động nhảy file. Nên Hàm bổ trợ phải khai ngóc đầu trên khối gọi nó."
+          },
+          {
+            question: "Lệnh khai báo kiểu <code>Range(0.0, 1.1)</code> trong dòng Property được sử dụng khi nào trong ShaderLab?",
+            options: ["Chọn màu RGB thủ công", "Tạo trực quan ngàm thanh trượt chứa khoảng giá trị số Float", "Tạo tùy chọn 1 ô đánh dấu True/False", "Quản lý dải số Nguyên mảng lớn"],
+            correct: 1,
+            explanation: "Range mang quyền tạo hình ảnh UI thanh Slider trên Inspector, tiện lợi việc điều hòa nhồi giá trị số Float kẹp giới hạn."
+          },
+          {
+            question: "Kiểu Texture property <code>Cube</code> trong cấu trúc ShaderLab thường đóng vai trò chuyên gánh vác việc gì?",
+            options: ["Tính toán thể tích khối trong tọa độ hộp sọ", "Mapping đồ thị hình lập phương của Pixel", "Là nền móng tạo các bản đồ phản xạ môi trường (Skybox/Metallic reflection maps)", "Bôi vân texture lên vật thể trụ Cube Unity chuẩn"],
+            correct: 2,
+            explanation: "'Cubemap' gồm 6 mặt kết hợp, ôm bọc lấy không gian 3 chiều chực đợi mô phỏng ảnh đổ bóng ảo phản xạ lên bề mặt vật làm bằng kim loại (metallic)."
+          },
+          {
+            question: "Connection variable (Biến số kết nối đồng bộ) là gì?",
+            options: ["Là kết nối dây cáp giữa CPU và GPU", "Là biến tạo ra trong khối Cg/HLSL ôm trùng y chang tên với Property của khối ShaderLab nhằm thấu hiểu nhau", "Là link đường dẫn mạng vào Server của dự án", "Là các node kéo thả kết dính trong giao diện Shader Graph"],
+            correct: 1,
+            explanation: "ShaderLab và Cg là 2 dòng máu ngôn ngữ biệt lập. Để Cg gọi dùng đúng Property do ShaderLab đẻ ra, nó phải mang một Variable đồng phục bảng tên không xê xích chút nào."
+          },
+          {
+            question: "Tại sao KHÔNG THỂ áp trực tiếp một Shader trơn lủi lên thẳng khung đa giác Polygonal object trống không trên màn hình 3D Scene?",
+            options: ["Lưới Mesh có thể bị xóa lệch trục tọa độ UV xé hình", "Cần một cầu nối cổng có tên Material ôm ấp cái Shader đó mới truyền thụ giá trị lên Object được", "Object thiếu Component Collider", "Bị chặn bởi Render Pass"],
+            correct: 1,
+            explanation: "Shader là lõi mã lệnh. Material thực chất là bệ phóng chứa giá trị data thực gán cho các Properties của file Shader đó. Object bắt buộc bám víu vào Material."
+          },
+          {
+            question: "Khối lệnh định dạng <code>[Toggle]</code>, <code>[Enum]</code> hoặc <code>[KeywordEnum]</code> trong thiết lập Property được biết chính xác với tên phân cấp chuyên ngành kỹ thuật gì?",
+            options: ["Connection Variable", "Fallback Component", "Material property Drawer", "Fragment Macro"],
+            correct: 2,
+            explanation: "Cuộc chơi Drawers làm ra custom properties hiển hiện trên thẻ Unity Inspector cởi bỏ gánh nặng quy chiếu vòng logic điều kiện (Conditional) dài dòng."
+          },
+          {
+            question: "Mệnh đề nào sau đây đúng khi áp dụng drawer <code>[Toggle]</code> cho một Field giá trị bằng ShaderLab?",
+            options: ["[Toggle] ép kiểu biến thành Boolean Native trong Shader Cg", "Tương ứng nó trả cho Property cấu hình Float một số có giá trị 0 hoặc 1 tựa như công tắc ON/OFF", "Dùng Toggle là giảm luôn số lần Draw Calls của dự án", "Drawer Toggle đòi hỏi bạn điền chữ 'True' ở DefaultValue"],
+            correct: 1,
+            explanation: "Trong Cg không tồn tại loại Boolean đúng nghĩa cho Drawer, ta vay mượn hàm hệ thống truyền qua float '0 tượng trưng OFF' và '1 tương đương ON'."
           }
         ]
       },
