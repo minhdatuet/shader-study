@@ -96,6 +96,79 @@ window.ShaderStudy.Theory["ch1-l2"] = `
           <p>Một yếu tố quan trọng khác khi chọn render pipeline của chúng ta chính là các shaders. Nói chung, trong cả <strong>High Definition RP</strong> và <strong>Universal RP</strong>, các shaders được tạo ra thông qua <strong>Shader Graph</strong>. Đây là một gói dịch vụ bao gồm một giao diện cho phép chúng ta thiết lập shader bằng việc nối các chuỗi nodes, điều này có cả mặt tích cực lẫn tiêu cực. Về mặt tích cực, chúng ta có thể tạo shaders một cách trực quan, thoải mái thông qua các nodes mà không cần viết mã (code) bằng ngôn ngữ HLSL. Tuy nhiên, mặt khác, nếu chúng ta cập nhật file dự án Unity của mình lên phiên bản mới hơn trên khâu sản xuất (ví dụ: từ 2019 lên 2020), các shaders đó rất có thể sẽ không thể biên dịch (compile) được nữa vì Shader Graph sở hữu các phiên bản cập nhật hoàn toàn độc lập với phiên bản gốc của Unity.</p>
           <p>Cách tốt nhất để tạo ra shaders trong Unity là thông qua ngôn ngữ <strong>HLSL</strong>, vì bằng phương pháp thủ công này, chúng ta có thể bảo đảm rằng chương trình của mình biên dịch mượt mà không phân biệt loại render pipelines đồng thời tiếp tục hoạt động bất chấp Unity có nâng cấp lên thế nào đi chăng nữa. Về sau bài này, chúng ta sẽ đi sâu vào việc tìm hiểu cấu trúc hệ thống của một chương trình lập trình gốc bằng <strong>HLSL</strong>.</p>
 
-          <h2 id="1.1.6">1.1.6. Matrices & Coordinate Systems</h2>
-          <p>Trong Unity, chúng ta thường dùng ma trận <strong>4x4</strong>. Biến <strong>W</strong> trong vector XYZW có ý nghĩa: 1 là điểm (Point), 0 là hướng (Direction).</p>
+          <h2 id="1.1.6">1.1.6. Matrices and coordinate systems</h2>
+          <p>Một trong những khái niệm mà chúng ta thấy thường xuyên trong việc tạo ra shaders là ma trận (matrices). Một ma trận là một danh sách các phần tử số tuân theo một số quy tắc số học nhất định và thường xuyên được sử dụng trong đồ họa máy tính.</p>
+          <p>Trong Unity, các ma trận đại diện cho một phép biến đổi không gian (spatial transformation) và trong số đó, chúng ta có thể tìm thấy:</p>
+          <ul>
+            <li><code>UNITY_MATRIX_MVP</code></li>
+            <li><code>UNITY_MATRIX_MV</code></li>
+            <li><code>UNITY_MATRIX_V</code></li>
+            <li><code>UNITY_MATRIX_P</code></li>
+            <li><code>UNITY_MATRIX_VP</code></li>
+            <li><code>UNITY_MATRIX_T_MV</code></li>
+            <li><code>UNITY_MATRIX_IT_MV</code></li>
+            <li><code>unity_ObjectToWorld</code></li>
+            <li><code>unity_WorldToObject</code></li>
+          </ul>
+          <p>Tất cả các thành phần này đều tương ứng với ma trận 4x4 (four by four matrices), tức là mỗi ma trận có 4 hàng và 4 cột giá trị tự nhiên. Biểu diễn khái niệm của hệ ma trận này diễn ra như sau:</p>
+          <pre><code>UNITY_MATRIX
+(
+Xx, Yx, Zx, Tx,
+Xy, Yy, Zy, Ty,
+Xz, Yz, Zz, Tz,
+Xt, Yt, Zt, Tw
+);</code></pre>
+          <p>Như chúng ta đã giải thích trước đó trong mục 1.0.2 khi nói về các đỉnh (vertices), một polygonal object mặc định có hai nodes. Trong Maya, các nodes này được biết đến là <strong>transform</strong> và <strong>shape</strong>, và cả hai đều chịu trách nhiệm tính toán vị trí của các vertices trong một không gian gọi là <strong>object-space</strong>, nơi định nghĩa vị trí của các vertices so với vị trí trung tâm (center) của hình khối đối tượng đó.</p>
+          <p>Giá trị cuối cùng của mỗi vertex trong object-space được nhân với một ma trận được gọi là <strong>model matrix</strong> (<code>UNITY_MATRIX_M</code>), nó cho phép chúng ta sửa đổi các giá trị về hệ quy chiếu (transformation), hướng xoay (rotation) và kích thước tỷ lệ (scale) của các đỉnh trên một đối tượng. Mỗi khi chúng ta xoay, thay đổi vị trí hoặc thu phóng đối tượng của mình, thì model matrix sẽ được cập nhật lại, nhưng quá trình đó diễn ra cụ thể như thế nào?</p>
+          <p>Để hiểu rõ hơn, chúng ta sẽ giả sử rằng chúng ta đang có một khối Cube trong scene và muốn thay đổi các hàm giá trị của nó thông qua một model matrix. Chúng ta sẽ bắt đầu bằng việc lấy ra một vertex của khối Cube hiện đang tọa lạc ở vị trí XYZW <code>[0.5f, -0.5f, -0.5f, 1]</code> so với tâm của nó.</p>
+          <p>Cần đề cập rõ rằng kênh "W" trong ví dụ ở trên tương ứng với hệ tọa độ "đồng nhất" (homogeneous) cho phép chúng ta thao tác chuyên sâu các vectors và điểm point một cách đồng nhất. Theo các phép biến đổi ma trận (matrix transformations), tọa độ chuẩn W có thể nhận giá trị bằng "không" hoặc "một". Khi W bằng 1 (nghĩa là X, Y, Z, 1), thì nó ám chỉ định vị một điểm (point) cụ thể trong không gian, trong khi, khi nó bằng 0 (nghĩa là X, Y, Z, 0), thì nó ám chỉ một hướng (direction) bắn ra trong không gian.</p>
+          <p>Sau này trong quá trình đồng hành cùng cuốn sách, chúng ta sẽ đề cập mở rộng hệ thống chuẩn hóa này khi chúng ta đi sâu vào phép nhân vectors với ma trận và làm ngược lại.</p>
+
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 1.1.6a</span>
+              <span class="fig-placeholder-path">assets/ch1/fig_1_1_6a.png</span>
+            </div>
+            <figcaption>Hình 1.1.6a: Identity matrix đề cập đến những ma trận sở hữu các định dạng giá trị mặc định của engine.</figcaption>
+          </div>
+
+          <p>Một trong những yếu tố cần đặc biệt cân nhắc đối với ma trận là phép nhân chỉ có thể thực hiện thành công khi số lượng cột trong ma trận thứ nhất BẰNG với số lượng hàng trong ma trận thứ hai. Như chúng ta đã biết, model matrix của chúng ta có kích thước 4 hàng và 4 cột (4x4), và vị trí của vertex có kích thước 4 hàng và 1 cột (4x1). Vì số cột trong model matrix trùng khớp với số hàng ở vị trí vertex, thế nên chúng có thể nhân với nhau đàng hoàng và kết quả sẽ trả về một ma trận mới gồm 4 hàng 1 cột (4x1) khác, ma trận tổng kết đó sẽ định nghĩa vị trí tọa độ vertex mới nguyên cho người dùng. Quá trình tính nhân thuật toán này xảy ra tự động trải vòng đối với tất cả các vertices trên đối tượng, và chúng đều được chuyên trách thực hiện thông qua giai đoạn <strong>vertex shader stage</strong> bên trong lõi shader.</p>          
+          <p>Như vậy chúng ta đã biết một <strong>object-space</strong> đóng vai trò định vị các vertices của một đối tượng so với gốc điểm tâm của chính nó, vậy những khái niệm <strong>world-space, view-space</strong>, và <strong>clip-space</strong> có ý nghĩa gì? Tương tự, bản chất định nghĩa của chúng cũng đồng đẳng như thế.</p>
+          <p><strong>World-space</strong> (Không gian thế giới quy chuẩn) ám chỉ vị trí tọa độ tuyệt đối của các đỉnh khi đối chiếu thẳng với tâm của thế giới (world); tức khoảng cách từ tọa độ gốc <code>[0, 0, 0, 1]</code> tại điểm grid zero trong scene của chúng ta đến vị trí của một đỉnh nằm trên đối tượng. Nếu chúng ta nuôi mộng biến đổi một tọa độ chuẩn từ không gian object sang không gian world, chúng ta có thể gọi biến shader tích hợp rất quen thuộc mang tên <code>unity_ObjectToWorld</code>.</p>
+
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 1.1.6b</span>
+              <span class="fig-placeholder-path">assets/ch1/fig_1_1_6b.png</span>
+            </div>
+            <figcaption>Hình 1.1.6b: Biểu diễn World Space.</figcaption>
+          </div>
+
+          <p><strong>View-Space</strong> chỉ vị trí đỉnh của đối tượng mà chúng ta đang xử lý so độ ngắm từ camera view. Nếu muốn biến đổi nhanh một tọa độ không gian từ world-space giật ngược về môi trường view-space, chúng ta có thể gọi thẳng thông số ma trận <code>UNITY_MATRIX_V</code>.</p>
+          
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 1.1.6c</span>
+              <span class="fig-placeholder-path">assets/ch1/fig_1_1_6c.png</span>
+            </div>
+            <figcaption>Hình 1.1.6c: Biểu diễn View Space.</figcaption>
+          </div>
+
+          <p>Cuối cùng, <strong>clip-space</strong>, cái tên được nhiều người biết đến hơn là projection-space (không gian ánh xạ), đề cập trần trụi đến vị trí đỉnh khi so nó với camera frustum (tầm nhìn chóp cụt của góc máy quay cảnh), chính vì thế hệ số này sẽ luôn bị chịu sự tác động bởi hàng loạt các thông số cài đặt như <strong>near clipping plane</strong> (mặt phẳng cắt gần nhất), <strong>far clipping plane</strong> (mặt phẳng cắt xa nhất) và <strong>field of view</strong> (trường quan điểm - góc nhìn hẹp hoặc rộng của ống kính). Lại một lần nữa, nếu mong muốn kéo tọa độ từ môi trường view-space chuyển kiếp sang clip-space, chúng ta chỉ việc gõ thêm bộ ma trận <code>UNITY_MATRIX_P</code> (viết tắt của Projection) là xong.</p>
+
+          <div class="lesson-fig">
+            <div class="fig-placeholder">
+              <span class="fig-placeholder-icon">🖼️</span>
+              <span class="fig-placeholder-text">Yêu cầu ảnh: Fig. 1.1.6d</span>
+              <span class="fig-placeholder-path">assets/ch1/fig_1_1_6d.png</span>
+            </div>
+            <figcaption>Hình 1.1.6d: Chuyển đổi từ View-Space sang Clip-Space.</figcaption>
+          </div>
+
+          <p>Nói đến đây, nhìn chung chúng ta mới chỉ thảo luận quanh quẩn mức độ khái niệm tổng thể về hàng tá các tọa độ gian khác biệt, chứ tuyệt nhiên chúng ta vẫn chưa định nghĩa ra việc phép hóa những biến đổi ma trận đó đại diện cho một điều thật sự gì.</p>
+          <p>Ví dụ đơn giản như, biến engine mặc định quen mắt <code>UNITY_MATRIX_MVP</code> trong shader thực ra đại diện cho khối lượng tính toán nhân chéo từ 3 đầu ma trận riêng rẽ khác. <strong>M</strong> biểu trưng cho Model matrix, <strong>V</strong> biểu trưng cho View matrix, và cuối cùng <strong>P</strong> đóng mác cho Projection matrix. Tổ hợp hợp khối ma trận đa diện này phần lớn được trưng dụng cho khâu chuyển đổi vertices liên hoàn từ tận gốc Object-space đến tận đích điểm là Clip-space. Chúng ta hãy ghim một chút cốt lõi vào tâm trí mình rằng polygonal object của chúng ta đã được thai nghén và lớn lên bên trong môi trường "ba chiều" (3D) nhưng mặt khác cái màn hình máy tính của chúng ta, nơi đối tượng được cất giọng hát và ánh xạ ra, chung quy vẫn mãi là khuôn "hai chiều" (2D), vì lẽ đó chúng ta bắt buộc, bằng giá nào, phải biến hình không gian của vật từ chỗ này bước qua chỗ khác.</p>
+          <p>Sau dịp này ở trong sách, chúng ta sẽ có cơ hội được tận tâm ôn lại các mẫu ý tưởng ở trên lúc chúng ta đưa Function thần kỳ mang tên <code>UnityObjectToClipPos</code> nhét thẳng vào mã shader của mình, nằm gọn gàng bên trong phân đoạn xử lý của <strong>vertex shader stage</strong>.</p>
 `;
